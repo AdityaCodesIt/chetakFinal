@@ -1,15 +1,13 @@
-# 🚨 AAPDA — Disaster Alert & Emergency Intelligence System
+# 🚨 CHETAK — Disaster Alert & Emergency Intelligence System
 
-> **आपदा** (AAPDA) — Hindi for "disaster"
-
-A real-time, multi-language disaster alert platform built for India. AAPDA aggregates disaster data from global and national sources, delivers severity-classified alerts, and **automatically translates critical emergency information** into the user's regional language using the Google Translate API.
+A real-time, multi-language disaster alert platform built for India. Chetak aggregates disaster data from global and national sources, delivers severity-classified alerts, and **automatically translates critical emergency information** into the user's regional language using the Google Translate API.
 
 ---
 
 ## 📋 Table of Contents
 
 - [Problem Statement](#-problem-statement)
-- [How AAPDA Solves It](#-how-aapda-solves-it)
+- [How Chetak Solves It](#-how-aapda-solves-it)
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
 - [Architecture Overview](#-architecture-overview)
@@ -40,9 +38,9 @@ India is one of the most disaster-prone countries in the world — facing floods
 
 ---
 
-## ✅ How AAPDA Solves It
+## ✅ How Chetak Solves It
 
-| Problem | AAPDA's Solution |
+| Problem | Chetak's Solution |
 |---------|-----------------|
 | Language barrier | **Auto-detects user's state** via geolocation → maps to regional language → **translates alerts via Google Translate API** |
 | Information fragmentation | **Aggregates from GDACS, ReliefWeb, IMD, CWC** into a single feed |
@@ -205,7 +203,7 @@ ApadaFinal/
 
 ```
 1. SPLASH SCREEN
-   └─→ User sees AAPDA branding + "Sign in with Google" button
+   └─→ User sees Chetak branding + "Sign in with Google" button
    └─→ Background video plays with CRT scanline effects
 
 2. GOOGLE AUTHENTICATION (Supabase OAuth)
@@ -242,7 +240,7 @@ ApadaFinal/
 
 ### 1. Splash Screen (`App.jsx`)
 - Full-screen background video (desktop + mobile variants)
-- AAPDA glitch logo with violent-jitter animation
+- Chetak glitch logo with violent-jitter animation
 - Google Sign-In button with power-surge glow effect
 - Breach overlay flash on load
 
@@ -400,7 +398,7 @@ The system maps all 28 Indian states and 8 Union Territories to their official r
 
 ## 🎨 Design Philosophy
 
-AAPDA uses a **military/terminal-inspired dark UI** — this is intentional:
+Chetak uses a **military/terminal-inspired dark UI** — this is intentional:
 
 1. **High Contrast for Emergencies** — White text on dark backgrounds is readable in all lighting conditions, including outdoors during disasters
 2. **Terminal Aesthetic** — Conveys urgency, authority, and seriousness. Users instinctively trust "system-level" interfaces
@@ -488,5 +486,5 @@ This project is developed as an academic/research initiative for disaster manage
 ---
 
 <p align="center">
-  <b>AAPDA</b> — Because in a disaster, every second counts. And language should never be the barrier. 🇮🇳
+  <b>Chetak</b> — Because in a disaster, every second counts. And language should never be the barrier. 🇮🇳
 </p>
