@@ -54,6 +54,12 @@ export default function AITerminal({ onHome, onProfile }) {
     setIsLoading(true);
 
     try {
+      if (!OPENAI_API_KEY) {
+        throw new Error(
+          'AI API key is not configured. Please set VITE_OPENAI_API_KEY in your Vercel project environment variables (Settings → Environment Variables).'
+        );
+      }
+
       const apiMessages = [
         { role: 'system', content: SYSTEM_PROMPT },
         ...updatedMessages.map((m) => ({ role: m.role, content: m.content })),

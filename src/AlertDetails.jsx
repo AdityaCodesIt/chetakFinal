@@ -11,6 +11,11 @@ export default function AlertDetails({ alert, userLocale, onBack, onHome, onAI, 
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [langSearch, setLangSearch] = useState('');
 
+  // AI Summarizer states
+  const [aiSummary, setAiSummary] = useState('');
+  const [isSummarizing, setIsSummarizing] = useState(true);
+  const [summaryError, setSummaryError] = useState(null);
+
   // Fallback if no alert was passed
   const data = alert || {
     title: 'NO ALERT DATA',
@@ -71,6 +76,63 @@ export default function AlertDetails({ alert, userLocale, onBack, onHome, onAI, 
     doTranslate();
     return () => { cancelled = true; };
   }, [data.id, localeLangCode]);
+
+  // AI Summarizer Effect
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchSummary() {
+      if (!data.title || data.title === 'NO ALERT DATA') {
+        setIsSummarizing(false);
+        return;
+      }
+      setIsSummarizing(true);
+      setSummaryError(null);
+      
+      try {
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+            'HTTP-Referer': window.location.href,
+            'X-Title': 'CHETAK Alert System',
+          },
+          body: JSON.stringify({
+            model: 'openai/gpt-oss-120b:free',
+            messages: [
+              { role: 'system', content: 'You are a helpful disaster alert summarizer. Your job is to take complex disaster alerts and explain them in very simple, easy-to-understand language for the general public. Keep it short, actionable, and calm. Do not use complex jargon. Maximum 3 sentences.' },
+              { role: 'user', content: `Please summarize this alert simply:\nTitle: ${data.title}\nDescription: ${data.description}\nGuidelines: ${(data.guidelines || []).join(', ')}\nEmergency: ${data.emergency || ''}` }
+            ],
+            max_tokens: 300,
+            temperature: 0.5,
+          }),
+        });
+
+        if (!response.ok) {
+            throw new Error('API Error');
+        }
+
+        const resData = await response.json();
+        const text = resData.choices?.[0]?.message?.content;
+        
+        if (!cancelled) {
+          setAiSummary(text || 'Could not generate summary.');
+        }
+      } catch (err) {
+        console.error('AI Summary error:', err);
+        if (!cancelled) {
+          setSummaryError('Failed to generate simple explanation.');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsSummarizing(false);
+        }
+      }
+    }
+
+    fetchSummary();
+    return () => { cancelled = true; };
+  }, [data.title, data.description, data.guidelines, data.emergency]);
 
   // Translate to custom language
   const handleCustomTranslate = async (langCode) => {
@@ -244,7 +306,43 @@ export default function AlertDetails({ alert, userLocale, onBack, onHome, onAI, 
 
         </div>
 
-        {/* Custom Translation & Stats Row */}
+        {/* AI Summarizer Section */}
+        <div className="w-full max-w-7xl mx-auto px-6 md:px-12 mb-16">
+          <div className="bg-gradient-to-r from-[#021209] to-[#051f11] backdrop-blur-3xl rounded-[3rem] p-8 md:p-12 border border-[#4ade80]/20 relative overflow-hidden shadow-2xl group">
+            {/* Decorative Glow */}
+            <div className="absolute top-1/2 left-0 w-64 h-64 bg-[#4ade80]/5 rounded-full filter blur-[100px] transform -translate-y-1/2 pointer-events-none group-hover:bg-[#4ade80]/10 transition-colors duration-700"></div>
+            
+            <div className="flex flex-col md:flex-row gap-8 relative z-10">
+              <div className="shrink-0 flex flex-col items-center justify-center md:border-r border-white/10 md:pr-8">
+                <div className="w-16 h-16 rounded-full bg-[#4ade80]/10 flex items-center justify-center border border-[#4ade80]/30 mb-4 shadow-[0_0_20px_rgba(74,222,128,0.1)]">
+                  <span className="material-symbols-outlined text-[#4ade80] text-3xl">psychology</span>
+                </div>
+                <span className="font-headline tracking-[0.2em] uppercase text-[#4ade80] text-sm font-bold">AI Analysis</span>
+              </div>
+              
+              <div className="flex-1 flex flex-col justify-center">
+                <h3 className="text-white font-headline text-xl mb-4">Simple Explanation</h3>
+                {isSummarizing ? (
+                  <div className="space-y-3 animate-pulse">
+                    <div className="h-4 bg-white/10 rounded w-full"></div>
+                    <div className="h-4 bg-white/10 rounded w-5/6"></div>
+                    <div className="h-4 bg-white/10 rounded w-4/6"></div>
+                  </div>
+                ) : summaryError ? (
+                  <p className="text-[#ff4444] font-body text-sm bg-[#ff4444]/10 p-4 rounded-xl border border-[#ff4444]/20">
+                    {summaryError}
+                  </p>
+                ) : (
+                  <div className="font-body text-white/80 text-lg leading-relaxed font-light">
+                    {aiSummary}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Custom Translation & Stats Row */ }
         <div className="w-full max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
           
           {/* Custom Translation Block */}
